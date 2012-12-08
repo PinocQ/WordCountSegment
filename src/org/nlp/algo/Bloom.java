@@ -63,7 +63,7 @@ public class Bloom implements Serializable {
 
 	// 将字符串标记到bits中
 	public void add(String value) {
-		openBitSet.set(GHFL.FNVHash(value));
+//		openBitSet.set(GHFL.FNVHash(value));
 		bits.set((int) (Math.abs(GHFL.APHash(value)) % 2147483647), true);
 		bits.set((int) (Math.abs(GHFL.BKDRHash(value)) % 2147483647), true);
 		bits.set((int) (Math.abs(GHFL.BPHash(value)) % 2147483647), true);
@@ -190,19 +190,23 @@ public class Bloom implements Serializable {
 		}
 	}
 	
-//	public static void main(String[] argv){
-//		BitSet bits;
-//		bits = new BitSet(100);
-//		bits.set(0);
-//		bits.set(1);
-//		bits.set(3);
-//		
-//		System.out.println(bits.length());
-//		System.out.println(bits.size());
-//		System.out.println(bits.cardinality());
-////		for (int i =0;i<255;i++){
-////			System.out.println(Count(i));
-////		}
-//	}
+	public static void main(String[] argv){
+		BitSet bits;
+		bits = new BitSet(100);
+		bits.set(0);
+		bits.set(1);
+		bits.set(3);
+		GeneralHashFunctionLibrary GHFL = new GeneralHashFunctionLibrary();
+		System.out.println(bits.length());
+		System.out.println(bits.size());
+		System.out.println(bits.cardinality());
+		
+		openBitSet = new OpenBitSet(Long.MAX_VALUE);
+		
+		for (int i =0;i<255;i++){
+			System.out.println(GHFL.FNVHash(i+"n"));
+			openBitSet.set(GHFL.FNVHash(i+"n"));
+		}
+	}
 	
 }
