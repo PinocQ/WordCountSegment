@@ -1,17 +1,7 @@
 package org.nlp.algo;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.BitSet;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class Bloom implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -31,11 +21,7 @@ public class Bloom implements Serializable {
 	/* 哈希函数对象 */
 	private SimpleHash[] func = new SimpleHash[seeds.length];
 
-	private static 	OpenBitSet openBitSet;
-	
 	public Bloom() {
-		
-		openBitSet = new OpenBitSet(Long.MAX_VALUE);
 
 		if (!init) {
 			DEFAULT_SIZE = (int) Math.abs(ELEM_NUM * Math.log(PERCENTAGE)
@@ -63,7 +49,6 @@ public class Bloom implements Serializable {
 
 	// 将字符串标记到bits中
 	public void add(String value) {
-//		openBitSet.set(GHFL.FNVHash(value));
 		bits.set((int) (Math.abs(GHFL.APHash(value)) % 2147483647), true);
 		bits.set((int) (Math.abs(GHFL.BKDRHash(value)) % 2147483647), true);
 		bits.set((int) (Math.abs(GHFL.BPHash(value)) % 2147483647), true);
@@ -120,18 +105,19 @@ public class Bloom implements Serializable {
 
 	// 保存模型
 	public void saveModel(String modelFile) {
-
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(
-					new GZIPOutputStream(new FileOutputStream(new File(
-							modelFile))));
-			oos.writeObject(bits);
-			oos.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("BloomFilter Model FileNotFound");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		compressObject.saveObjectToFile(modelFile,bits);
+		
+//		try {
+//			ObjectOutputStream oos = new ObjectOutputStream(
+//					new GZIPOutputStream(new FileOutputStream(new File(
+//							modelFile))));
+//			oos.writeObject(bits);
+//			oos.close();
+//		} catch (FileNotFoundException e) {
+//			System.out.println("BloomFilter Model FileNotFound");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	// 加载模型
@@ -139,32 +125,36 @@ public class Bloom implements Serializable {
 		if (init) {
 			return;
 		}
+		
+		
 		System.out.println("load the model..." + modelFile);
-		try {
-			File dic = new File(modelFile);
-			ObjectInputStream ois;
-
-			if (!dic.exists()) {
-				InputStream fs = Bloom.class.getClassLoader()
-						.getResourceAsStream(modelFile);
-				ois = new ObjectInputStream(new GZIPInputStream(fs));
-
-			} else {
-				FileInputStream fs = new FileInputStream(new File(modelFile));
-				ois = new ObjectInputStream(new GZIPInputStream(fs));
-
-			}
-
-			bits = (BitSet) ois.readObject();
-			ois.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+//		try {
+//			File dic = new File(modelFile);
+//			ObjectInputStream ois;
+//
+//			if (!dic.exists()) {
+//				InputStream fs = Bloom.class.getClassLoader()
+//						.getResourceAsStream(modelFile);
+//				ois = new ObjectInputStream(new GZIPInputStream(fs));
+//
+//			} else {
+//				FileInputStream fs = new FileInputStream(new File(modelFile));
+//				ois = new ObjectInputStream(new GZIPInputStream(fs));
+//
+//			}
+//
+//			bits = (BitSet) ois.readObject();
+//			ois.close();
+//
+//			
+//			
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		bits = (BitSet) compressObject.loadObjectFromFile(modelFile);
 		init = true;
 	}
 
@@ -190,23 +180,19 @@ public class Bloom implements Serializable {
 		}
 	}
 	
-	public static void main(String[] argv){
-		BitSet bits;
-		bits = new BitSet(100);
-		bits.set(0);
-		bits.set(1);
-		bits.set(3);
-		GeneralHashFunctionLibrary GHFL = new GeneralHashFunctionLibrary();
-		System.out.println(bits.length());
-		System.out.println(bits.size());
-		System.out.println(bits.cardinality());
-		
-		openBitSet = new OpenBitSet(Long.MAX_VALUE);
-		
-		for (int i =0;i<255;i++){
-			System.out.println(GHFL.FNVHash(i+"n"));
-			openBitSet.set(GHFL.FNVHash(i+"n"));
-		}
-	}
+//	public static void main(String[] argv){
+//		BitSet bits;
+//		bits = new BitSet(100);
+//		bits.set(0);
+//		bits.set(1);
+//		bits.set(3);
+//		
+//		System.out.println(bits.length());
+//		System.out.println(bits.size());
+//		System.out.println(bits.cardinality());
+////		for (int i =0;i<255;i++){
+////			System.out.println(Count(i));
+////		}
+//	}
 	
 }

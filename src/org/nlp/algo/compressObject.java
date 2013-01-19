@@ -62,7 +62,7 @@ public final class compressObject {
 	}
 
 	// 保存模型
-	public void saveObjectToFile(String fileName, Object obj) {
+	public static void saveObjectToFile(String fileName, Object obj) {
 
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
@@ -81,11 +81,11 @@ public final class compressObject {
 	public static Object loadObjectFromFile(String fileName) {
 		Object obj = null;
 		try {
-			File dic = new File(fileName);
+			File dir = new File(fileName);
 			ObjectInputStream ois;
 
-			if (!dic.exists()) {
-				InputStream fs = Bloom.class.getClassLoader()
+			if (!dir.exists()) {				
+				InputStream fs = compressObject.class.getClassLoader()
 						.getResourceAsStream(fileName);
 				ois = new ObjectInputStream(new GZIPInputStream(fs));
 
@@ -100,7 +100,7 @@ public final class compressObject {
 			e.printStackTrace();
 			return (obj);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("FileNotFound");
 			return (obj);
 		}
 		return (obj);
